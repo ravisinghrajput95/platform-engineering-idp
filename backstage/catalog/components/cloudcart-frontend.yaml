@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cloudcart-frontend
+  title: CloudCart Frontend
+  description: Frontend web application for the CloudCart platform
+  tags:
+    - react
+    - vite
+    - kubernetes
+    - gke
+  annotations:
+    github.com/project-slug: ravisinghrajput95/cloudcart-frontend
+spec:
+  type: website
+  lifecycle: production
+  owner: platform-team
+  system: cloudcart-platform
+  dependsOn:
+    - component:default/cloudcart-backend

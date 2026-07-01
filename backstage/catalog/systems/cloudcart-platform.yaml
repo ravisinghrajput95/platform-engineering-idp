@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: cloudcart-platform
+  title: CloudCart Platform
+  description: Cloud-native eCommerce platform running on Google Kubernetes Engine
+  tags:
+    - gke
+    - kubernetes
+    - microservices
+    - platform-engineering
+spec:
+  owner: platform-team

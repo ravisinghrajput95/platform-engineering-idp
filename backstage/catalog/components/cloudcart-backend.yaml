@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cloudcart-backend
+  title: CloudCart Backend
+  description: Backend microservice for the CloudCart platform
+  tags:
+    - python
+    - fastapi
+    - kubernetes
+    - gke
+  annotations:
+    github.com/project-slug: ravisinghrajput95/cloudcart-backend
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: cloudcart-platform
+  dependsOn:
+  - resource:default/cloudcart-postgres
