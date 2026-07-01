@@ -79,7 +79,17 @@ techdocs:
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
   providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        signIn:
+          resolvers:
+            - resolver: usernameMatchingUserEntityName
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: emailMatchingUserEntityProfileEmail
     # See https://backstage.io/docs/auth/guest/provider
     guest: {}
   # see https://backstage.io/docs/ai/mcp-actions#client-id-metadata-documents

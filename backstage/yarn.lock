@@ -12475,6 +12475,7 @@ __metadata:
     "@backstage/plugin-app-react": "npm:^0.2.4"
     "@backstage/plugin-app-visualizer": "npm:^0.2.5"
     "@backstage/plugin-auth": "npm:^0.1.9"
+    "@backstage/plugin-auth-react": "npm:^0.1.28"
     "@backstage/plugin-catalog": "npm:^2.0.6"
     "@backstage/plugin-catalog-graph": "npm:^0.6.5"
     "@backstage/plugin-catalog-import": "npm:^0.13.14"
@@ -15941,6 +15942,13 @@ __metadata:
     no-case: "npm:^3.0.4"
     tslib: "npm:^2.0.3"
   checksum: 10c0/5b859ea65097a7ea870e2c91b5768b72ddf7fa947223fd29e167bcdff58fe731d941c48e47a38ec8aa8e43044c8fbd15cd8fa21689a526bc34b6548197cd5b05
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^17.4.2":
+  version: 17.4.2
+  resolution: "dotenv@npm:17.4.2"
+  checksum: 10c0/164f8e77a646c8446867d5b588d26ea6005c8ea7c5eb41cf926f6113d23f2191355f6e0cfd95ea9bab98394a5b0a3f1e51a8399711b666fe55cc7b0bd745f942
   languageName: node
   linkType: hard
 
@@ -27559,6 +27567,7 @@ __metadata:
     "@jest/environment-jsdom-abstract": "npm:~30.2.0"
     "@playwright/test": "npm:^1.32.3"
     "@types/jest": "npm:^30.0.0"
+    dotenv: "npm:^17.4.2"
     jest: "npm:~30.2.0"
     jsdom: "npm:^27.1.0"
     node-gyp: "npm:^10.0.0"

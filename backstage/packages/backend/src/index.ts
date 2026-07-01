@@ -5,7 +5,7 @@
  *
  * Happy hacking!
  */
-
+import 'dotenv/config';
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
@@ -16,6 +16,7 @@ backend.add(import('@backstage/plugin-proxy-backend'));
 // scaffolder plugin
 backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
+backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 backend.add(
   import('@backstage/plugin-scaffolder-backend-module-notifications'),
 );
