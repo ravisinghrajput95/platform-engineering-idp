@@ -1,4 +1,14 @@
 apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: ravisinghrajput95
+spec:
+  profile:
+    displayName: Ravi Rajput
+    email: rajputravisingh95@gmail.com
+  memberOf: [platform-team]
+---
+apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
   name: platform-team
@@ -8,4 +18,5 @@ spec:
   type: team
   profile:
     displayName: Platform Engineering
+  members: [ravisinghrajput95]
   children: []

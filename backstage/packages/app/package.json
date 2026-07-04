@@ -24,6 +24,7 @@
     "@backstage/plugin-app-react": "^0.2.4",
     "@backstage/plugin-app-visualizer": "^0.2.5",
     "@backstage/plugin-auth": "^0.1.9",
+    "@backstage/plugin-auth-backend-module-github-provider": "^0.5.4",
     "@backstage/plugin-auth-react": "^0.1.28",
     "@backstage/plugin-catalog": "^2.0.6",
     "@backstage/plugin-catalog-graph": "^0.6.5",
