@@ -88,8 +88,6 @@ auth:
         signIn:
           resolvers:
             - resolver: usernameMatchingUserEntityName
-            - resolver: emailLocalPartMatchingUserEntityName
-            - resolver: emailMatchingUserEntityProfileEmail
     # See https://backstage.io/docs/auth/guest/provider
     guest: {}
   # see https://backstage.io/docs/ai/mcp-actions#client-id-metadata-documents
@@ -116,6 +114,11 @@ catalog:
     - allow: [Component, System, API, Resource, Location]
   locations:
   # CloudCart Catalog
+  
+  - type: file
+    target: ../../templates/cloudcart-fastapi/template.yaml
+    rules:
+      - allow: [Template]
 
   - type: file
     target: ../../catalog/groups/platform-team.yaml
