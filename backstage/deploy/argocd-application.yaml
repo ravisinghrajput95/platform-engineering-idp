@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:ravisinghrajput95/platform-engineering-idp.git
+    repoURL: https://github.com/ravisinghrajput95/platform-engineering-idp.git
     # NOTE: track main once this branch is merged; kept on the feature branch
     # for now so ArgoCD can sync while this is still being built out.
     targetRevision: feature/platform-branding
