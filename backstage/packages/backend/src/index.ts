@@ -7,8 +7,34 @@
  */
 import 'dotenv/config';
 import { createBackend } from '@backstage/backend-defaults';
+import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 const backend = createBackend();
+
+// We're served over plain HTTP on a bare IP (no TLS/domain yet). Helmet's
+// default Strict-Transport-Security header would still tell browsers to
+// force-upgrade every future request to HTTPS, which fails silently against
+// this HTTP-only endpoint and looks like an infinite reload loop. Drop the
+// header until TLS is actually in front of this.
+backend.add(
+  rootHttpRouterServiceFactory({
+    configure: ({ app, middleware, routes, healthRouter }) => {
+      app.use(middleware.helmet());
+      app.use((_req, res, next) => {
+        res.removeHeader('Strict-Transport-Security');
+        next();
+      });
+      app.use(middleware.cors());
+      app.use(middleware.compression());
+      app.use(middleware.logging());
+      app.use(middleware.rateLimit());
+      app.use(healthRouter);
+      app.use(routes);
+      app.use(middleware.notFound());
+      app.use(middleware.error());
+    },
+  }),
+);
 
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-proxy-backend'));
