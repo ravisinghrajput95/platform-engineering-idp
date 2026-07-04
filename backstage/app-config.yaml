@@ -88,8 +88,6 @@ auth:
         signIn:
           resolvers:
             - resolver: usernameMatchingUserEntityName
-    # See https://backstage.io/docs/auth/guest/provider
-    guest: {}
   # see https://backstage.io/docs/ai/mcp-actions#client-id-metadata-documents
   # to learn more about client id metadata documents
   experimentalClientIdMetadataDocuments:
