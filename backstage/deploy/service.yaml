@@ -9,6 +9,6 @@ spec:
   selector:
     app: backstage
   ports:
-    - name: http
-      port: 80
+    - name: https
+      port: 443
       targetPort: 7007
