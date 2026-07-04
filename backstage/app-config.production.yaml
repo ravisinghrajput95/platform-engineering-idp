@@ -13,6 +13,14 @@ backend:
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
   listen: ':7007'
 
+  # We're served over plain HTTP on a bare IP (no TLS/domain yet). Helmet's
+  # default CSP includes upgrade-insecure-requests, which tells the browser
+  # to force every fetch/XHR/script on the page to HTTPS -- same failure
+  # mode we hit with HSTS, just via CSP instead of a cached browser policy.
+  # Drop it until TLS is actually in place.
+  csp:
+    upgrade-insecure-requests: false
+
   # config options: https://node-postgres.com/apis/client
   database:
     client: pg
