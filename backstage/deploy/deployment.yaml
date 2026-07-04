@@ -34,6 +34,8 @@ spec:
               value: "5432"
             - name: POSTGRES_USER
               value: "postgres"
+            - name: NODE_EXTRA_CA_CERTS
+              value: /etc/backstage/tls/tls.crt
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
@@ -49,6 +51,10 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/backstage/tls
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /healthcheck
@@ -87,3 +93,8 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
+
+      volumes:
+        - name: tls
+          secret:
+            secretName: backstage-tls

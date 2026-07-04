@@ -13,13 +13,26 @@ backend:
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
   listen: ':7007'
 
-  # No domain yet, so no CA-issued cert is possible. `https: true` makes
-  # Backstage generate a self-signed cert in-process for the baseUrl's
-  # hostname -- browsers require a secure context (HTTPS or localhost) to
-  # expose crypto.randomUUID/crypto.subtle, which the frontend uses
-  # unconditionally. Visitors will see a one-time untrusted-cert warning
-  # to click through. Swap for a real cert once a domain is in place.
-  https: true
+  # No domain yet, so no CA-issued cert is possible -- browsers require a
+  # secure context (HTTPS or localhost) to expose crypto.randomUUID/
+  # crypto.subtle, which the frontend uses unconditionally. Visitors will
+  # see a one-time untrusted-cert warning to click through. Swap for a real
+  # cert once a domain is in place.
+  #
+  # Using our own persistent cert (mounted from the backstage-tls secret)
+  # rather than Backstage's `https: true` auto-generated one: that one is
+  # regenerated fresh in-memory on every restart and isn't in Node's
+  # trusted CA list, which breaks the backend's own internal calls to
+  # itself (e.g. the auth sign-in resolver's catalog lookup) with
+  # "self-signed certificate". NODE_EXTRA_CA_CERTS (set on the container)
+  # tells Node to trust this specific cert for its own outbound calls,
+  # without disabling TLS validation process-wide.
+  https:
+    certificate:
+      cert:
+        $file: /etc/backstage/tls/tls.crt
+      key:
+        $file: /etc/backstage/tls/tls.key
 
   # Kept disabled even though we're on HTTPS now: with a self-signed cert,
   # if TLS ever breaks visitors would be hard-locked out for the HSTS
