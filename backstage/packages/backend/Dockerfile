@@ -21,8 +21,13 @@ ENV PYTHON=/usr/bin/python3
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
-    apt-get install -y --no-install-recommends python3 g++ build-essential && \
+    apt-get install -y --no-install-recommends python3 python3-pip g++ build-essential && \
     rm -rf /var/lib/apt/lists/*
+
+# TechDocs generator.runIn: 'local' builds docs in-process (no Docker socket available in
+# this pod), which needs mkdocs + the TechDocs mkdocs plugins on PATH.
+# --break-system-packages: Debian trixie's system Python is externally-managed (PEP 668).
+RUN pip3 install --break-system-packages --no-cache-dir mkdocs-techdocs-core
 
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
 # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
@@ -66,6 +71,10 @@ COPY --chown=node:node examples ./examples
 # CloudCart catalog entities and scaffolder templates referenced by app-config.production.yaml
 COPY --chown=node:node catalog ./catalog
 COPY --chown=node:node templates ./templates
+
+# This app's own catalog entity + TechDocs source, generated on-demand at ./ (dir:. techdocs-ref)
+COPY --chown=node:node catalog-info.yaml mkdocs.yml ./
+COPY --chown=node:node docs ./docs
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./

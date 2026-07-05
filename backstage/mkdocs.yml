@@ -1,0 +1,9 @@
+site_name: 'CloudCart Platform Engineering Portal'
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - CI/CD Pipeline: cicd.md
+  - Software Catalog: catalog.md
+  - TechDocs: techdocs.md
+plugins:
+  - techdocs-core

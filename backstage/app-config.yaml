@@ -112,7 +112,10 @@ catalog:
     - allow: [Component, System, API, Resource, Location]
   locations:
   # CloudCart Catalog
-  
+
+  - type: file
+    target: ../../catalog-info.yaml
+
   - type: file
     target: ../../templates/cloudcart-fastapi/template.yaml
     rules:

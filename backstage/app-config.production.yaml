@@ -68,6 +68,14 @@ auth:
   # this once a domain + cert-manager/Google-managed cert is in place.
   environment: development
 
+techdocs:
+  generator:
+    # No Docker socket available in this pod, so generation happens in-process using the
+    # mkdocs-techdocs-core install baked into the backend image (see packages/backend/Dockerfile).
+    runIn: 'local'
+  publisher:
+    type: 'local'
+
 catalog:
   # Overrides the default list locations from app-config.yaml as these contain example data.
   # See https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog for more details
@@ -75,6 +83,9 @@ catalog:
   locations:
     # File locations are relative to the backend process; in this Docker image
     # that's /app, since the Dockerfile COPYs catalog/ and templates/ there.
+    - type: file
+      target: ./catalog-info.yaml
+
     - type: file
       target: ./catalog/groups/platform-team.yaml
       rules:
