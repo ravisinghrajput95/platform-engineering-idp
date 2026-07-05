@@ -40,6 +40,15 @@ backend:
   csp:
     upgrade-insecure-requests: false
 
+  # By default the catalog's UrlReader only fetches from configured integration hosts
+  # (github.com, via integrations.github) or an explicit allowlist -- raw.githubusercontent.com
+  # is deliberately not the same host as github.com, so the cloudcart-backend-api entity's
+  # definition.$text needs it listed here explicitly. See docs/catalog.md for why that host
+  # was chosen over a github.com blob URL (avoids depending on GITHUB_TOKEN's validity).
+  reading:
+    allow:
+      - host: raw.githubusercontent.com
+
   # config options: https://node-postgres.com/apis/client
   database:
     client: pg
