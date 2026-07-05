@@ -1,10 +1,8 @@
 name: TechDocs Build Check (demo)
 
-# Demonstrates the reusable techdocs-build-check.yml workflow against three different
-# mkdocs sources in this repo, standing in for future repos of different stacks:
-# the portal's own docs, a Python/FastAPI-flavored doc set, and a React/Vite-flavored one.
-# This validates the docs build cleanly -- it does not change how they're served; all three
-# keep rendering via the IDP's own on-demand generation (dir: refs), unchanged.
+# Demonstrates the reusable techdocs-build-check.yml workflow. Currently only the portal's own
+# docs live in this repo; add another job here (with a different working-directory) as soon as
+# there's a second real doc set to validate against.
 
 on:
   pull_request:
@@ -12,20 +10,9 @@ on:
     paths:
       - 'backstage/mkdocs.yml'
       - 'backstage/docs/**'
-      - 'backstage/techdocs/**'
 
 jobs:
   portal-docs:
     uses: ./.github/workflows/techdocs-build-check.yml
     with:
       working-directory: backstage
-
-  cloudcart-backend-docs:
-    uses: ./.github/workflows/techdocs-build-check.yml
-    with:
-      working-directory: backstage/techdocs/cloudcart-backend
-
-  cloudcart-frontend-docs:
-    uses: ./.github/workflows/techdocs-build-check.yml
-    with:
-      working-directory: backstage/techdocs/cloudcart-frontend

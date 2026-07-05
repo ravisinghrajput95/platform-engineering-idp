@@ -31,9 +31,7 @@ this ever needs to survive restarts or scale past one replica, the publisher can
    - `dir:.` if the docs live in the same repo as the catalog entry (as this Backstage
      instance's own entity does).
    - `url:https://github.com/<owner>/<repo>/tree/main/` if the docs live in a different repo
-     from wherever the catalog entry is registered (this is how `cloudcart-backend` and
-     `cloudcart-frontend` are set up -- their catalog entries live here, but their code and
-     docs live in their own repos).
+     from wherever the catalog entry is registered.
 2. Add an `mkdocs.yml` and a `docs/` folder at that location, e.g.:
    ```yaml
    site_name: 'My Service'
@@ -44,12 +42,9 @@ this ever needs to survive restarts or scale past one replica, the publisher can
    ```
 3. Open the component's TechDocs tab -- it builds on first request.
 
-`cloudcart-backend` and `cloudcart-frontend` don't have real repos yet, so their
-`techdocs-ref` annotations point at placeholder doc sets committed in this repo instead
-(`backstage/techdocs/cloudcart-backend`, `backstage/techdocs/cloudcart-frontend`) using
-`dir:../../techdocs/<name>`. Once those services get real repos, move the docs there and
-switch the annotation to `url:https://github.com/<owner>/<repo>/tree/main/` -- there's a note
-to that effect at the top of each placeholder page.
+`cloudcart-backend` and `cloudcart-frontend` don't have real repos yet, so they carry no
+`techdocs-ref` annotation for now -- add one (`url:...`, per above) once each service has a
+real repo with its own `mkdocs.yml`/`docs/`.
 
 ## CI build-check
 
@@ -68,5 +63,6 @@ jobs:
       working-directory: .
 ```
 
-`.github/workflows/techdocs-build-check-demo.yml` demonstrates it against three different doc
-sets in this repo (the portal's own docs, and the two placeholder sets above) as a PR check.
+`.github/workflows/techdocs-build-check-demo.yml` demonstrates it against this portal's own
+docs as a PR check; add another job there against a different working-directory as soon as a
+second real doc set exists to validate.

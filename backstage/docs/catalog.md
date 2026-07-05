@@ -17,11 +17,11 @@ relative to `/app` in the built image) and `app-config.yaml` for local dev (path
 - **Resource**: `cloudcart-postgres` -- the shared Postgres database.
 - **Group/User**: `platform-team`, owning everything above.
 
-Both components and this Backstage instance's own entity
-([`catalog-info.yaml`](https://github.com/ravisinghrajput95/platform-engineering-idp/blob/main/backstage/catalog-info.yaml)
-at the repo root) carry a `github.com/project-slug` annotation and a
-`backstage.io/techdocs-ref` annotation -- see [TechDocs](techdocs.md) for what that second one
-does.
+Both components carry a `github.com/project-slug` annotation. This Backstage instance's own
+entity ([`catalog-info.yaml`](https://github.com/ravisinghrajput95/platform-engineering-idp/blob/main/backstage/catalog-info.yaml)
+at the repo root) additionally carries a `backstage.io/techdocs-ref` annotation -- see
+[TechDocs](techdocs.md) for what that does and why `cloudcart-backend`/`cloudcart-frontend`
+don't have one yet.
 
 Note that `cloudcart-backend` and `cloudcart-frontend` are catalog *entries* here, but their
 actual source code lives in separate GitHub repos

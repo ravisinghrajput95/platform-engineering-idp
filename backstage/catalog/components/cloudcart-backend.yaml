@@ -11,7 +11,6 @@ metadata:
     - gke
   annotations:
     github.com/project-slug: ravisinghrajput95/cloudcart-backend
-    backstage.io/techdocs-ref: dir:../../techdocs/cloudcart-backend
 spec:
   type: service
   lifecycle: production
