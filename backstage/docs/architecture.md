@@ -51,6 +51,25 @@ port 443. There's no domain or CA-issued certificate yet, so:
   marks session cookies `secure` under `production`, which requires HTTPS trusted by the
   browser without warnings. Flip this once there's a real cert.
 
+## Kubernetes plugin
+
+The catalog's Kubernetes tab reads live pod/deployment status directly from the `cloudcart-dev`
+cluster. `app-config.production.yaml`'s `kubernetes.clusterLocatorMethods` uses
+`authProvider: 'google'`, so it reuses the same Workload Identity binding already in place for
+the Cloud SQL Auth Proxy (`backstage-sql-client`) rather than a separate credential -- that
+service account additionally has `roles/container.viewer` (GCP IAM, lets it authenticate to the
+cluster's control plane) and is bound to the built-in `view` ClusterRole in-cluster via
+`deploy/kubernetes-plugin-rbac.yaml` (Kubernetes RBAC, read-only, governs what it can actually
+see once authenticated).
+
+A component only shows up on this tab if its `catalog-info.yaml` has a
+`backstage.io/kubernetes-id: <id>` annotation *and* its actual Kubernetes objects (Deployment,
+Service, ...) carry a matching `backstage.io/kubernetes-id: <id>` **label** -- the annotation
+alone isn't enough. `backstage/catalog-info.yaml` and `deploy/deployment.yaml`/`service.yaml`
+are wired up this way for the portal's own pod; the `cloudcart-fastapi` scaffolder template
+carries the same pattern (using `${{ values.serviceName }}` for both) so services created from
+it get this for free.
+
 ## Sign-in
 
 GitHub OAuth is the only sign-in path -- the guest login provider was removed once Backstage

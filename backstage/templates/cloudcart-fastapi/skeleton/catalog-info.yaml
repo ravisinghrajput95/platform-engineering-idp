@@ -10,6 +10,7 @@ metadata:
   annotations:
     github.com/project-slug: ${{ values.destination.owner }}/${{ values.destination.repo }}
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: ${{ values.serviceName }}
 spec:
   type: service
   lifecycle: ${{ values.lifecycle }}
