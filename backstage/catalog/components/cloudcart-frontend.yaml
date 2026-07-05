@@ -10,7 +10,12 @@ metadata:
     - kubernetes
     - gke
   annotations:
-    github.com/project-slug: ravisinghrajput95/cloudcart-frontend
+    # Actual source lives in the AI-Powered-DevSecOps-CI-CD-Pipeline monorepo (frontend/
+    # subdirectory), not a standalone cloudcart-frontend repo. The GitHub Actions plugin has no
+    # per-path/workflow filtering, so this component's tab will show all of that repo's
+    # workflow runs (frontend-ci, deploy-frontend, backend-ci, codeql, etc.) -- use the tab's
+    # own search/filter to narrow to frontend-ci.yaml / deploy-frontend.yaml.
+    github.com/project-slug: ravisinghrajput95/AI-Powered-DevSecOps-CI-CD-Pipeline
     # Matches the existing `app: cloudcart-frontend` label on the live Deployment/Pod in the
     # `cloudcart` namespace -- that workload isn't managed by this repo's ArgoCD Application,
     # so this reads its existing labels rather than adding a new backstage.io/kubernetes-id

@@ -40,3 +40,19 @@ and it generates a new repo with a FastAPI skeleton, Dockerfile, Kubernetes mani
 If a service didn't come from the template, add its `catalog-info.yaml` by hand (following the
 existing components as a model) and register it as a new `file` location in both
 `app-config.yaml` and `app-config.production.yaml`.
+
+## GitHub Actions tab
+
+Components with a `github.com/project-slug` annotation get a GitHub Actions tab
+(`@backstage-community/plugin-github-actions`), showing workflow runs, job steps, and logs. It
+authenticates as the signed-in user's own GitHub OAuth token (the same sign-in provider already
+configured) rather than a service account -- expect an incremental consent prompt the first time
+someone opens the tab.
+
+`cloudcart-backend` and `cloudcart-frontend`'s actual source lives in the
+[`AI-Powered-DevSecOps-CI-CD-Pipeline`](https://github.com/ravisinghrajput95/AI-Powered-DevSecOps-CI-CD-Pipeline)
+monorepo (`backend/`/`frontend/` subdirectories), not standalone repos -- both entities'
+`project-slug` points at that same repo. The plugin has no per-path or per-workflow filtering
+annotation, so both components' tabs show *all* of that repo's workflow runs (`backend-ci`,
+`frontend-ci`, `deploy-backend`, `deploy-frontend`, `codeql`, `dast`, etc.) -- use the tab's own
+search/filter to narrow to the relevant one.
