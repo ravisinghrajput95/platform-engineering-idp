@@ -1,0 +1,75 @@
+name: Backstage Deploy
+
+on:
+  push:
+    branches: [main]
+    paths: ['backstage/**']
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  PROJECT_ID: project-0c628a24-2e5e-4878-861
+  REGION: us-central1
+  IMAGE: us-central1-docker.pkg.dev/project-0c628a24-2e5e-4878-861/backstage/backstage
+  WORKLOAD_IDENTITY_PROVIDER: projects/861082766890/locations/global/workloadIdentityPools/github-pool/providers/github
+  SERVICE_ACCOUNT: backstage-ci-sa@project-0c628a24-2e5e-4878-861.iam.gserviceaccount.com
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backstage
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Type check
+        run: yarn tsc
+
+      - name: Build backend
+        run: yarn build:backend
+
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: backstage
+          file: backstage/packages/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+      - name: Update deploy manifest with new image tag
+        run: |
+          sed -i "s|image: ${IMAGE}:.*|image: ${IMAGE}:${{ github.sha }}|" deploy/deployment.yaml
+          git diff --stat deploy/deployment.yaml
+
+      - name: Commit and push manifest update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deploy/deployment.yaml
+          git commit -m "chore(backstage): deploy image ${{ github.sha }} [skip ci]"
+          git push

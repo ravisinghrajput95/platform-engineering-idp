@@ -1,0 +1,45 @@
+name: Backstage CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ['backstage/**']
+
+defaults:
+  run:
+    working-directory: backstage
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Type check
+        run: yarn tsc
+
+      - name: Lint
+        run: yarn lint:all
+
+      - name: Test
+        run: yarn test:all
+
+      - name: Build backend
+        run: yarn build:backend
+
+      - name: Verify Docker image builds
+        uses: docker/build-push-action@v6
+        with:
+          context: backstage
+          file: backstage/packages/backend/Dockerfile
+          push: false
