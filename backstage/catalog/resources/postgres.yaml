@@ -8,6 +8,13 @@ metadata:
     - postgresql
     - database
     - gke
+  annotations:
+    # Matches the existing `app: postgres` label on the live StatefulSet/Pod (postgres-0) in
+    # the `cloudcart` namespace, Helm-managed -- same pattern as cloudcart-backend/frontend.
+    # dependsOn is just a catalog relation (visible in Catalog Graph); it doesn't make the
+    # Kubernetes plugin show a dependency's pods under the depending component's own tab, so
+    # this resource needs its own annotation for postgres-0 to show up on its own page.
+    backstage.io/kubernetes-label-selector: 'app=postgres'
 spec:
   type: database
   owner: platform-team
