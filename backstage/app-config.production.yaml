@@ -76,7 +76,11 @@ kubernetes:
       clusters:
         - url: https://35.253.63.207
           name: cloudcart-dev
-          authProvider: 'google'
+          # Not 'google' -- that's the end-user OAuth strategy and needs a `google` sign-in
+          # provider under `auth.providers` (we only have GitHub), which is why it 404'd with
+          # "Unknown auth provider 'google'". This one authenticates server-side via
+          # Application Default Credentials (Workload Identity), same as everything else here.
+          authProvider: 'googleServiceAccount'
           skipMetricsLookup: true
           # Cluster CA cert, public data (not a secret) -- from
           # `gcloud container clusters describe cloudcart-dev --region us-central1`.

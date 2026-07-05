@@ -55,8 +55,12 @@ port 443. There's no domain or CA-issued certificate yet, so:
 
 The catalog's Kubernetes tab reads live pod/deployment status directly from the `cloudcart-dev`
 cluster. `app-config.production.yaml`'s `kubernetes.clusterLocatorMethods` uses
-`authProvider: 'google'`, so it reuses the same Workload Identity binding already in place for
-the Cloud SQL Auth Proxy (`backstage-sql-client`) rather than a separate credential -- that
+`authProvider: 'googleServiceAccount'` (not `'google'` -- that's a different strategy meant for
+end-user OAuth sign-in, and 404s with "Unknown auth provider 'google'" unless a `google` sign-in
+provider is also configured under `auth.providers`, which this app doesn't have).
+`googleServiceAccount` authenticates server-side via Application Default Credentials, so it
+reuses the same Workload Identity binding already in place for the Cloud SQL Auth Proxy
+(`backstage-sql-client`) rather than a separate credential -- that
 service account additionally has `roles/container.viewer` (GCP IAM, lets it authenticate to the
 cluster's control plane) and is bound to the built-in `view` ClusterRole in-cluster via
 `deploy/kubernetes-plugin-rbac.yaml` (Kubernetes RBAC, read-only, governs what it can actually
