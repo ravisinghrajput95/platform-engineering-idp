@@ -41,6 +41,28 @@ If a service didn't come from the template, add its `catalog-info.yaml` by hand 
 existing components as a model) and register it as a new `file` location in both
 `app-config.yaml` and `app-config.production.yaml`.
 
+## API docs
+
+`@backstage/plugin-api-docs` (already installed) renders `kind: API` entities as interactive
+OpenAPI docs on the APIS tab. `catalog/apis/cloudcart-backend-api.yaml` defines
+`cloudcart-backend-api`, linked via `providesApis` on `cloudcart-backend` and `consumesApis` on
+`cloudcart-frontend`.
+
+The spec itself isn't inline -- it's fetched from
+`backend/openapi.yaml` in the `AI-Powered-DevSecOps-CI-CD-Pipeline` repo via `definition.$text`,
+using the **raw.githubusercontent.com URL, not a `github.com` blob URL**. That's deliberate: a
+`github.com` URL would resolve through this app's GitHub integration/`GITHUB_TOKEN` (the same
+path that 401'd for the TechDocs `url:` refs earlier), while the raw URL is a plain
+unauthenticated HTTPS fetch against a public repo -- no dependency on that token's health at
+all. If the backend repo ever goes private, this needs to switch to a `github.com` blob URL and
+will then depend on `GITHUB_TOKEN` being valid.
+
+The spec was hand-written (Flask has no auto-generated OpenAPI/Swagger here, unlike a FastAPI
+service) by reading through `backend/routes/*.py` and `backend/models/*.py` directly, and
+validated with `openapi-spec-validator`. It's intentionally complete -- including the `Admin`
+and `Vulnerable` tags -- since this is a deliberately-insecure DevSecOps training app and the
+spec documents that surface accurately, VULN notes included.
+
 ## GitHub Actions tab
 
 Components with a `github.com/project-slug` annotation get a GitHub Actions tab

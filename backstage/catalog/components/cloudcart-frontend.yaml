@@ -28,3 +28,5 @@ spec:
   system: cloudcart-platform
   dependsOn:
     - component:default/cloudcart-backend
+  consumesApis:
+    - cloudcart-backend-api

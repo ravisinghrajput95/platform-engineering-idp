@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: cloudcart-backend-api
+  title: CloudCart Backend API
+  description: >
+    REST API for the CloudCart backend. Intentionally insecure (DevSecOps training app) --
+    see the Admin and Vulnerable tags in the spec itself.
+  tags:
+    - openapi
+    - rest
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: cloudcart-platform
+  definition:
+    # Public, unauthenticated fetch -- deliberately not routed through the GitHub
+    # integration/GITHUB_TOKEN (see docs/catalog.md for why).
+    $text: https://raw.githubusercontent.com/ravisinghrajput95/AI-Powered-DevSecOps-CI-CD-Pipeline/main/backend/openapi.yaml

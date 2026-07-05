@@ -28,3 +28,5 @@ spec:
   system: cloudcart-platform
   dependsOn:
   - resource:default/cloudcart-postgres
+  providesApis:
+    - cloudcart-backend-api
