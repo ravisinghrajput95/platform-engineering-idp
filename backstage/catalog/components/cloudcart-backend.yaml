@@ -11,6 +11,11 @@ metadata:
     - gke
   annotations:
     github.com/project-slug: ravisinghrajput95/cloudcart-backend
+    # Matches the existing `app: cloudcart-backend` label on the live Deployment/Pod in the
+    # `cloudcart` namespace -- that workload isn't managed by this repo's ArgoCD Application,
+    # so this reads its existing labels rather than adding a new backstage.io/kubernetes-id
+    # label to resources we don't own the source of.
+    backstage.io/kubernetes-label-selector: 'app=cloudcart-backend'
 spec:
   type: service
   lifecycle: production
