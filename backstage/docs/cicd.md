@@ -39,6 +39,12 @@ true, selfHeal: true}`. Once the deploy workflow's commit lands on `main`, ArgoC
 new image tag on its next sync and rolls it out -- no `kubectl` access from GitHub Actions was
 ever required.
 
+## Docs build-check
+
+Separate from the image pipeline: `.github/workflows/techdocs-build-check.yml` is a reusable
+`workflow_call` workflow any repo can use to validate its `mkdocs.yml`/`docs/` build cleanly.
+See [TechDocs](techdocs.md#ci-build-check) for details and the adoption snippet.
+
 ## Why this shape
 
 Two deliberate choices worth calling out for anyone extending this pipeline:

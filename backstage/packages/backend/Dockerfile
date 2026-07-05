@@ -76,6 +76,10 @@ COPY --chown=node:node templates ./templates
 COPY --chown=node:node catalog-info.yaml mkdocs.yml ./
 COPY --chown=node:node docs ./docs
 
+# Placeholder TechDocs sources for components whose own repos don't exist yet
+# (dir:../../techdocs/<name> techdocs-ref in catalog/components/*.yaml)
+COPY --chown=node:node techdocs ./techdocs
+
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz

@@ -1,0 +1,5 @@
+site_name: 'CloudCart Frontend'
+nav:
+  - Home: index.md
+plugins:
+  - techdocs-core

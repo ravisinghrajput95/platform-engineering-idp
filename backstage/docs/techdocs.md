@@ -44,7 +44,29 @@ this ever needs to survive restarts or scale past one replica, the publisher can
    ```
 3. Open the component's TechDocs tab -- it builds on first request.
 
-`cloudcart-backend` and `cloudcart-frontend` have the annotation already but no `mkdocs.yml`
-yet in their own repos, so their TechDocs tabs currently show "no docs found" rather than an
-error. New services scaffolded from `cloudcart-fastapi` get a working `mkdocs.yml`/`docs/` out
-of the box, so this only applies to those two pre-existing repos.
+`cloudcart-backend` and `cloudcart-frontend` don't have real repos yet, so their
+`techdocs-ref` annotations point at placeholder doc sets committed in this repo instead
+(`backstage/techdocs/cloudcart-backend`, `backstage/techdocs/cloudcart-frontend`) using
+`dir:../../techdocs/<name>`. Once those services get real repos, move the docs there and
+switch the annotation to `url:https://github.com/<owner>/<repo>/tree/main/` -- there's a note
+to that effect at the top of each placeholder page.
+
+## CI build-check
+
+Serving is always on-demand by the IDP itself (no external publish step) -- but a broken
+`mkdocs.yml` or a dangling nav reference would otherwise only surface as a runtime error on
+someone's TechDocs tab. `.github/workflows/techdocs-build-check.yml` is a reusable
+`workflow_call` workflow that runs `mkdocs build --strict` against a given directory, using the
+same `mkdocs-techdocs-core` toolchain the backend itself uses to generate docs. It never touches
+application code, so any repo -- regardless of language -- can adopt it:
+
+```yaml
+jobs:
+  docs-check:
+    uses: ravisinghrajput95/platform-engineering-idp/.github/workflows/techdocs-build-check.yml@main
+    with:
+      working-directory: .
+```
+
+`.github/workflows/techdocs-build-check-demo.yml` demonstrates it against three different doc
+sets in this repo (the portal's own docs, and the two placeholder sets above) as a PR check.

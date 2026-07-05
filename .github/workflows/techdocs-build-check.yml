@@ -1,0 +1,29 @@
+name: TechDocs Build Check
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: 'Directory containing mkdocs.yml and docs/'
+        required: false
+        type: string
+        default: '.'
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install mkdocs-techdocs-core
+        run: pip install --no-cache-dir mkdocs-techdocs-core
+
+      - name: Validate docs build
+        run: mkdocs build --strict --site-dir "$(mktemp -d)"
