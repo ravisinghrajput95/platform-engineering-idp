@@ -7,9 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/ravisinghrajput95/platform-engineering-idp.git
-    # NOTE: track main once this branch is merged; kept on the feature branch
-    # for now so ArgoCD can sync while this is still being built out.
-    targetRevision: feature/platform-branding
+    targetRevision: main
     path: backstage/deploy
   destination:
     server: https://kubernetes.default.svc
