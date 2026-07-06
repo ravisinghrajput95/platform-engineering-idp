@@ -11,6 +11,22 @@ app:
         config:
           path: /
 
+    # Only show the ArgoCD tab/cards on components that actually declare an
+    # argocd/app-name annotation -- most components here (cloudcart-backend,
+    # cloudcart-frontend, ...) are deployed via Helm, not ArgoCD.
+    - entity-content:argocd/ArgoCdPage:
+        config:
+          filter:
+            metadata.annotations.argocd/app-name: { $exists: true }
+    - entity-card:argocd/overviewCard:
+        config:
+          filter:
+            metadata.annotations.argocd/app-name: { $exists: true }
+    - entity-card:argocd/historyCard:
+        config:
+          filter:
+            metadata.annotations.argocd/app-name: { $exists: true }
+
 organization:
   name: CloudCart
 
