@@ -4,11 +4,22 @@ metadata:
   name: backstage
   title: CloudCart Platform Engineering Portal
   description: This Backstage instance -- the developer portal for the CloudCart platform.
+  tags:
+    - typescript
+    - nodejs
+    - backstage
+    - kubernetes
+    - gke
+    - argocd
   annotations:
     github.com/project-slug: ravisinghrajput95/platform-engineering-idp
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: backstage
+    # Name of the ArgoCD Application (backstage/deploy/argocd-application.yaml)
+    # that deploys this component.
+    argocd/app-name: backstage
 spec:
   type: website
   owner: platform-team
   lifecycle: production
+  system: cloudcart-platform

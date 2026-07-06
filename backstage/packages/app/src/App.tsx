@@ -1,5 +1,6 @@
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import argocdPlugin from '@roadiehq/backstage-plugin-argo-cd/alpha';
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPageBlueprint } from '@backstage/plugin-app-react'; // Fix import
 import { SignInPage } from '@backstage/core-components'; // Needed for rendering the UI
@@ -27,6 +28,7 @@ const signInPageExtension = SignInPageBlueprint.make({
 export default createApp({
   features: [
     catalogPlugin,
+    argocdPlugin,
     navModule,
     // 3. Register the extension inside a frontend module
     createFrontendModule({

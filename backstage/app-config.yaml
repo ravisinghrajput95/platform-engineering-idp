@@ -149,6 +149,14 @@ catalog:
 kubernetes:
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
 
+argocd:
+  appLocatorMethods:
+    - type: config
+      instances:
+        - name: cloudcart-argocd
+          url: https://argocd-server.argocd.svc.cluster.local
+          token: ${ARGOCD_AUTH_TOKEN}
+
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:
   # setting this to `false` will disable permissions
