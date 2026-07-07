@@ -103,3 +103,4 @@ charts/
 *.p12
 *.pfx
 secrets/
+certs/

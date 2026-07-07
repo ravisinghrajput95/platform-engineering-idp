@@ -1,0 +1,71 @@
+# Runs the same backend image and config layering as the GKE deployment
+# (see deploy/deployment.yaml and docs/architecture.md), with the GKE-only pieces
+# swapped for local equivalents:
+#   - Cloud SQL Auth Proxy -> plain postgres container
+#   - backstage-tls secret -> ./certs/tls.{crt,key} (run scripts/gen-local-tls.sh once)
+#   - backstage-secrets / backstage-argocd-token -> .env (copy .env.example)
+#
+# The kubernetes/argocd integrations in app-config.production.yaml still point at the
+# real cloudcart-dev cluster and its cluster-internal ArgoCD URL, so those tabs won't
+# connect from here -- same as any other local setup without a tunnel into that cluster.
+#
+# Before first run:
+#   yarn install --immutable && yarn tsc && yarn build:backend
+#   ./scripts/gen-local-tls.sh
+#   cp .env.example .env   # fill in GITHUB_TOKEN, AUTH_GITHUB_CLIENT_ID/SECRET, POSTGRES_PASSWORD
+#   docker compose up --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backstage:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "7007:7007"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:?set GITHUB_TOKEN in .env}
+      AUTH_GITHUB_CLIENT_ID: ${AUTH_GITHUB_CLIENT_ID:?set AUTH_GITHUB_CLIENT_ID in .env}
+      AUTH_GITHUB_CLIENT_SECRET: ${AUTH_GITHUB_CLIENT_SECRET:?set AUTH_GITHUB_CLIENT_SECRET in .env}
+      # The argocd plugin's config schema rejects an empty string (crashes the backend at
+      # boot, not just the one plugin), so this needs *some* value even though the target
+      # (a cluster-internal DNS name) won't resolve from here -- it'll fail at connection
+      # time instead, same as if the real token were wrong.
+      ARGOCD_AUTH_TOKEN: ${ARGOCD_AUTH_TOKEN:-unreachable-locally}
+      NODE_EXTRA_CA_CERTS: /etc/backstage/tls/tls.crt
+    volumes:
+      - ./certs:/etc/backstage/tls:ro
+    command:
+      - node
+      - packages/backend
+      - --config
+      - app-config.yaml
+      - --config
+      - app-config.production.yaml
+      - --config
+      - app-config.local-container.yaml
+
+volumes:
+  postgres-data:

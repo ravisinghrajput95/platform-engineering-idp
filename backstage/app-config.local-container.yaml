@@ -1,0 +1,10 @@
+# Layered on top of app-config.yaml + app-config.production.yaml by docker-compose.yaml,
+# so the local container matches the GKE deployment (HTTPS with a persistent self-signed
+# cert, Postgres via the pg client, kubernetes/argocd pointing at the real cloudcart-dev
+# cluster) with just the externally-visible URL swapped from the GKE LoadBalancer IP to
+# localhost.
+app:
+  baseUrl: https://localhost:7007
+
+backend:
+  baseUrl: https://localhost:7007
