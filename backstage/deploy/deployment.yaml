@@ -22,7 +22,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: backstage
-          image: us-central1-docker.pkg.dev/project-0c628a24-2e5e-4878-861/backstage/backstage:2aca1d848b566cdb5b213cacb1c69f1e7a247271
+          image: us-central1-docker.pkg.dev/project-0c628a24-2e5e-4878-861/backstage/backstage:69dd4a218548d8c0c1cf007413ec4d0de08c1833
           ports:
             - name: http
               containerPort: 7007
