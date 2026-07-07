@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${{ values.serviceName }}
+  labels:
+    app: ${{ values.serviceName }}
+    backstage.io/kubernetes-id: ${{ values.serviceName }}
+spec:
+  selector:
+    app: ${{ values.serviceName }}
+  ports:
+    - port: 80
+      targetPort: ${{ values.port }}

@@ -137,3 +137,8 @@ catalog:
       target: ./templates/cloudcart-fastapi/template.yaml
       rules:
         - allow: [Template]
+
+    - type: file
+      target: ./templates/cloudcart-nodejs/template.yaml
+      rules:
+        - allow: [Template]
