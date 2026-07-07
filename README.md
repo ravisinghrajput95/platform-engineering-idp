@@ -1,311 +1,152 @@
-# Platform Engineering IDP on GKE
+# CloudCart Platform Engineering Portal
 
-## Overview
+An internal developer platform built on [Backstage](https://backstage.io), running on Google
+Kubernetes Engine (GKE). It's the single place CloudCart engineers go to find what services
+exist, who owns them, how they're deployed, and how to spin up a new one.
 
-This repository contains an **Internal Developer Platform (IDP)** built using **Backstage** and deployed on **Google Kubernetes Engine (GKE)**.
+[![Backstage CI](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-ci.yml/badge.svg)](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-ci.yml)
+[![Backstage Deploy](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-deploy.yml/badge.svg)](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-deploy.yml)
+[![TechDocs Build Check](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/techdocs-build-check-demo.yml/badge.svg)](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/techdocs-build-check-demo.yml)
 
-The objective of this project is to provide a centralized developer portal that enables engineering teams to discover services, deploy applications, monitor workloads, access documentation, and perform self-service software provisioning through a unified interface.
+![Sign-in page](docs/images/sign-in.png)
 
-The platform follows modern Platform Engineering practices using GitOps, Infrastructure as Code, Kubernetes, and cloud-native tooling.
+## Features
 
----
+- **Software Catalog** -- CloudCart's system, services, API, and shared Postgres resource,
+  modeled as Backstage entities with ownership.
+- **Golden-path scaffolder templates** -- self-service "Create" flow that generates a new
+  service (FastAPI or Node.js/Express today), complete with Dockerfile, Kubernetes manifests,
+  `catalog-info.yaml`, and TechDocs, then publishes it to a new GitHub repo and registers it in
+  the catalog automatically.
+- **TechDocs** -- docs-as-code, built on demand from each service's own `mkdocs.yml`, with a
+  reusable CI workflow (`techdocs-build-check.yml`) any repo can adopt to catch a broken nav or
+  bad build before merge.
+- **Kubernetes plugin** -- live pod/deployment status from the `cloudcart-dev` GKE cluster,
+  surfaced directly on a component's page.
+- **ArgoCD plugin** -- sync status and deploy history for ArgoCD-managed components.
+- **GitHub Actions plugin** -- workflow runs, job steps, and logs for any component with a
+  `github.com/project-slug` annotation.
+- **GitHub OAuth sign-in** -- no guest login; identity resolves to catalog `User` entities.
+- **GitOps deployment** -- CI builds and pushes an image; ArgoCD (not CI) applies it to the
+  cluster, with `selfHeal`/`prune` enabled.
 
-# Architecture
+## Architecture
 
-```text
-Developers
-      │
-      ▼
-+---------------------------+
-|       Backstage IDP       |
-+---------------------------+
-        │
-        ├───────────────► Software Catalog
-        ├───────────────► TechDocs
-        ├───────────────► Scaffolder
-        ├───────────────► Kubernetes
-        ├───────────────► Argo CD
-        ├───────────────► GitHub
-        ├───────────────► Prometheus
-        └───────────────► Grafana
+```mermaid
+flowchart TB
+    Dev([Developer]) -->|push to main| Repo[(GitHub Repo)]
+    Eng([Platform engineers]) -->|HTTPS + GitHub OAuth| BS
 
-                    │
-                    ▼
+    Repo --> CI["backstage-ci.yml
+on every PR"]
+    Repo --> CD["backstage-deploy.yml
+on push to main"]
+    CD -->|"build + push image
+Workload Identity Federation"| AR[[Artifact Registry]]
+    CD -.->|"bump image tag in deploy/
+commit back, skip-ci"| Repo
 
-        Google Kubernetes Engine
-                    │
-                    ▼
+    AR -.pulls image.-> BS
 
-             CloudCart Platform
+    subgraph GKE["GKE cluster: cloudcart-dev"]
+        Argo{{ArgoCD}} <-->|"auto-sync deploy/ + selfHeal
+ArgoCD plugin reads app status"| BS["Backstage pod
+backend + cloud-sql-proxy sidecar"]
+        BS --> CCBackend[cloudcart-backend]
+        BS --> CCFrontend[cloudcart-frontend]
+    end
+
+    BS -->|Workload Identity| SQL[(Cloud SQL)]
+    BS <-.->|"Scaffolder publish:github
+catalog + OAuth sign-in"| Repo
 ```
 
----
+See [`docs/architecture.md`](backstage/docs/architecture.md) for the details behind this
+diagram -- TLS, identity, and how the Kubernetes plugin authenticates -- and
+[`docs/cicd.md`](backstage/docs/cicd.md) for the full CI/CD pipeline writeup.
 
-# Technology Stack
+## Tech stack
 
-## Platform
+| Layer | What |
+|---|---|
+| Portal | Backstage (TypeScript/Node), plugins: catalog, scaffolder, techdocs, kubernetes, [ArgoCD (Roadie)](https://roadie.io/backstage/plugins/argo-cd/), github-actions |
+| Runtime | Google Kubernetes Engine, single-replica Deployment + LoadBalancer Service |
+| Database | Cloud SQL (Postgres), reached via the Cloud SQL Auth Proxy sidecar |
+| CI/CD | GitHub Actions, Workload Identity Federation (no stored GCP keys), ArgoCD (GitOps, `automated: {prune, selfHeal}`) |
+| Registry | Google Artifact Registry |
+| Docs | TechDocs, MkDocs, built in-process (no Docker-in-Docker) |
+| Local dev parity | Docker Compose mirroring the GKE deployment (see below) |
 
-* Backstage
-* Google Kubernetes Engine (GKE)
-* Kubernetes
-* Helm
-* Argo CD
-* GitOps
-
-## Cloud
-
-* Google Cloud Platform
-* Artifact Registry
-* Cloud Load Balancer
-* Cloud IAM
-
-## CI/CD
-
-* GitHub Actions
-* Docker
-* Helm Charts
-
-## Infrastructure as Code
-
-* Terraform
-
-## Observability
-
-* Prometheus
-* Grafana
-* Alertmanager
-
-## Security
-
-* Kyverno
-* KubeArmor
-
-## Documentation
-
-* TechDocs
-* MkDocs
-
----
-
-# Repository Structure
+## Repository structure
 
 ```text
 platform-engineering-idp/
-
 ├── backstage/
-│   ├── packages/
-│   ├── plugins/
-│   ├── app-config.yaml
-│   ├── app-config.production.yaml
-│   ├── catalog-info.yaml
-│   └── package.json
-│
-├── docs/
-│
-├── gitops/
-│
-├── helm/
-│
-├── terraform/
-│
-├── templates/
-│
-├── scripts/
-│
+│   ├── packages/            # app (frontend) + backend workspaces
+│   ├── catalog/              # System/Component/Resource/API/Group entities
+│   ├── templates/             # Scaffolder golden-path templates
+│   │   ├── cloudcart-fastapi/
+│   │   └── cloudcart-nodejs/
+│   ├── deploy/                # Plain k8s manifests, applied by ArgoCD
+│   ├── docs/                  # TechDocs source (this portal's own docs)
+│   ├── scripts/                # gen-local-tls.sh
+│   ├── app-config.yaml         # Base config (dev defaults)
+│   ├── app-config.production.yaml   # GKE overrides (HTTPS, Postgres, kubernetes/argocd)
+│   ├── app-config.local-container.yaml  # docker-compose override (baseUrl only)
+│   └── docker-compose.yaml
+├── .github/workflows/         # backstage-ci, backstage-deploy, techdocs-build-check(-demo)
+├── docs/images/                # README assets
 └── README.md
 ```
 
----
+## Getting started
 
-# Features
+Two ways to run this locally, depending on what you're doing:
 
-* Developer Self-Service Portal
-* Software Catalog
-* Kubernetes Dashboard
-* GitHub Integration
-* Argo CD Integration
-* Prometheus Metrics
-* Grafana Dashboards
-* Technical Documentation
-* Service Templates
-* GitOps Deployments
-* Role-Based Access Control
-* Production-Ready Deployment
+### Fast path: `yarn start`
 
----
-
-# Prerequisites
-
-* Node.js 22 LTS
-* Yarn
-* Docker
-* kubectl
-* Helm
-* Git
-* Google Cloud SDK
-
----
-
-# Local Development
-
-Clone the repository.
-
-```bash
-git clone <repository-url>
-```
-
-Navigate to the Backstage application.
+Hot-reload dev server -- SQLite, plain HTTP, no Postgres/TLS setup. Best for day-to-day
+frontend/backend work.
 
 ```bash
 cd backstage
-```
-
-Install dependencies.
-
-```bash
 yarn install
-```
-
-Start Backstage.
-
-```bash
 yarn start
 ```
 
-Frontend
+- Frontend: http://localhost:3000
+- Backend: http://localhost:7007
 
+### Prod-parity path: Docker Compose
+
+Same backend image and config layering as the actual GKE deployment -- real Postgres via the
+`pg` client, HTTPS with a persistent self-signed cert, same `kubernetes`/`argocd` config. Use
+this when you need to reproduce something that only shows up under prod-like conditions.
+
+```bash
+cd backstage
+yarn install --immutable && yarn tsc && yarn build:backend
+./scripts/gen-local-tls.sh
+cp .env.example .env   # fill in GITHUB_TOKEN, AUTH_GITHUB_CLIENT_ID/SECRET, POSTGRES_PASSWORD
+docker compose up --build
 ```
-http://localhost:3000
-```
 
-Backend
+Then open `https://localhost:7007` (click through the self-signed cert warning) and sign in
+with GitHub. Full details, including what's identical to prod vs. swapped, and the known
+Kubernetes/ArgoCD connectivity gaps, are in
+[`docs/local-development.md`](backstage/docs/local-development.md).
 
-```
-http://localhost:7007
-```
+## Documentation
 
----
+Full docs are served through this portal's own TechDocs tab, and also readable directly:
 
-# Deployment Roadmap
+- [Architecture](backstage/docs/architecture.md) -- how the Backstage instance itself is deployed
+- [CI/CD Pipeline](backstage/docs/cicd.md) -- commit to running pod, end to end
+- [Software Catalog](backstage/docs/catalog.md) -- how services are modeled, and how to onboard a new one
+- [TechDocs](backstage/docs/techdocs.md) -- how this docs system is configured
+- [Local Development](backstage/docs/local-development.md) -- the Docker Compose setup
 
-## Module 1
+## License
 
-* [x] Backstage Local Setup
-
-## Module 2
-
-* [ ] GitHub Authentication
-
-## Module 3
-
-* [ ] PostgreSQL Integration
-
-## Module 4
-
-* [ ] Dockerize Backstage
-
-## Module 5
-
-* [ ] Push Image to Artifact Registry
-
-## Module 6
-
-* [ ] Deploy Backstage on GKE
-
-## Module 7
-
-* [ ] Configure Google Cloud Load Balancer
-
-## Module 8
-
-* [ ] Kubernetes Plugin
-
-## Module 9
-
-* [ ] Argo CD Plugin
-
-## Module 10
-
-* [ ] GitHub Plugin
-
-## Module 11
-
-* [ ] Software Catalog
-
-## Module 12
-
-* [ ] Scaffolder Templates
-
-## Module 13
-
-* [ ] TechDocs
-
-## Module 14
-
-* [ ] Prometheus & Grafana Integration
-
-## Module 15
-
-* [ ] Logging Integration
-
-## Module 16
-
-* [ ] Production Hardening
-
----
-
-# Existing Platform Components
-
-The following platform services are already operational:
-
-* Google Kubernetes Engine (GKE)
-* Argo CD
-* Prometheus
-* Grafana
-* Alertmanager
-* Kyverno
-* KubeArmor
-* CloudCart Microservices
-* GitHub Actions CI/CD
-* Google Artifact Registry
-
-Backstage will act as the central developer portal that integrates and manages these platform components.
-
----
-
-# Future Enhancements
-
-* Multi-cluster Kubernetes Support
-* Multi-environment Deployments
-* Service Ownership
-* Cost Visibility
-* Platform Analytics
-* Incident Management
-* AI-powered Developer Assistant
-* Internal Developer Marketplace
-* Golden Path Templates
-* Platform Scorecards
-
----
-
-# Learning Objectives
-
-This project demonstrates hands-on experience with:
-
-* Platform Engineering
-* Internal Developer Platforms
-* Kubernetes
-* Google Cloud Platform
-* GitOps
-* Infrastructure as Code
-* Continuous Delivery
-* Cloud-Native Architecture
-* Developer Experience
-* Enterprise DevOps
-
----
-
-# License
-
-This project is licensed under the MIT License.
-
+No license file is included -- this is a personal/portfolio project (`UNLICENSED` in
+`package.json`), not licensed for reuse.
