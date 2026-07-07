@@ -8,7 +8,7 @@ exist, who owns them, how they're deployed, and how to spin up a new one.
 [![Backstage Deploy](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-deploy.yml/badge.svg)](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-deploy.yml)
 [![TechDocs Build Check](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/techdocs-build-check-demo.yml/badge.svg)](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/techdocs-build-check-demo.yml)
 
-![Sign-in page](docs/images/sign-in.png)
+![The CloudCart Catalog, showing owned components with their systems, owners, and tags](docs/images/catalog.png)
 
 ## Features
 
@@ -29,6 +29,43 @@ exist, who owns them, how they're deployed, and how to spin up a new one.
 - **GitHub OAuth sign-in** -- no guest login; identity resolves to catalog `User` entities.
 - **GitOps deployment** -- CI builds and pushes an image; ArgoCD (not CI) applies it to the
   cluster, with `selfHeal`/`prune` enabled.
+
+## Screenshots
+
+<table>
+<tr>
+<td width="50%">
+
+**Software Catalog**
+![Catalog](docs/images/catalog.png)
+CloudCart's components, systems, and a service scaffolded from the Node.js template, all with ownership and lifecycle metadata.
+
+</td>
+<td width="50%">
+
+**Create — golden-path templates**
+![Create/Templates](docs/images/create-templates.png)
+Both scaffolder templates (FastAPI and Node.js/Express) ready to self-service a new CloudCart microservice.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**TechDocs**
+![TechDocs](docs/images/techdocs.png)
+Docs built on demand from each service's own `mkdocs.yml`.
+
+</td>
+<td width="50%">
+
+**Sign-in**
+![Sign-in page](docs/images/sign-in.png)
+GitHub OAuth only -- no guest login.
+
+</td>
+</tr>
+</table>
 
 ## Architecture
 
