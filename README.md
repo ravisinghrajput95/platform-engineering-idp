@@ -70,7 +70,7 @@ diagram -- TLS, identity, and how the Kubernetes plugin authenticates -- and
 | Layer | What |
 |---|---|
 | Portal | Backstage (TypeScript/Node), plugins: catalog, scaffolder, techdocs, kubernetes, [ArgoCD (Roadie)](https://roadie.io/backstage/plugins/argo-cd/), github-actions |
-| Runtime | Google Kubernetes Engine, single-replica Deployment + LoadBalancer Service |
+| Runtime | Google Kubernetes Engine, 2-replica Deployment (soft anti-affinity + PodDisruptionBudget) + LoadBalancer Service |
 | Database | Cloud SQL (Postgres), reached via the Cloud SQL Auth Proxy sidecar |
 | CI/CD | GitHub Actions, Workload Identity Federation (no stored GCP keys), ArgoCD (GitOps, `automated: {prune, selfHeal}`) |
 | Registry | Google Artifact Registry |

@@ -5,10 +5,19 @@ services it catalogs.
 
 ## Where it runs
 
-Backstage runs as a single-replica `Deployment` in the `backstage` namespace on the
+Backstage runs as a 2-replica `Deployment` in the `backstage` namespace on the
 `cloudcart-dev` GKE cluster (project `<GCP_PROJECT_ID>`, `us-central1`). The
 manifests live in [`backstage/deploy/`](https://github.com/ravisinghrajput95/platform-engineering-idp/tree/main/backstage/deploy)
 and are applied by ArgoCD -- see [CI/CD Pipeline](cicd.md) for how a change gets there.
+
+A soft pod anti-affinity rule prefers scheduling the two replicas on different nodes (not
+required, so a busy cluster can still place both if it has to), and a `PodDisruptionBudget`
+with `minAvailable: 1` keeps voluntary disruptions -- node drains, cluster upgrades -- from
+taking both down at once. Note that `techdocs.publisher.type: 'local'` (see [TechDocs](techdocs.md))
+means each replica caches generated docs independently -- whichever replica a request lands on
+that hasn't built a given service's docs yet will do a cold rebuild, not read a stale/missing
+cache from its sibling. Not incorrect, just an inconsistent first-load experience across
+replicas; switching the publisher to `googleGcs` would make the cache shared instead.
 
 Each pod has two containers:
 
