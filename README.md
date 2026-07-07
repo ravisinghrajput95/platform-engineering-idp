@@ -8,7 +8,7 @@ exist, who owns them, how they're deployed, and how to spin up a new one.
 [![Backstage Deploy](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-deploy.yml/badge.svg)](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/backstage-deploy.yml)
 [![TechDocs Build Check](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/techdocs-build-check-demo.yml/badge.svg)](https://github.com/ravisinghrajput95/platform-engineering-idp/actions/workflows/techdocs-build-check-demo.yml)
 
-![The CloudCart Catalog, showing owned components with their systems, owners, and tags](docs/images/catalog.png)
+![Sign-in page of the CloudCart Platform Engineering Portal](docs/images/sign-in.png)
 
 ## Features
 
@@ -50,18 +50,11 @@ Both scaffolder templates (FastAPI and Node.js/Express) ready to self-service a 
 </td>
 </tr>
 <tr>
-<td width="50%">
+<td colspan="2">
 
 **TechDocs**
 ![TechDocs](docs/images/techdocs.png)
 Docs built on demand from each service's own `mkdocs.yml`.
-
-</td>
-<td width="50%">
-
-**Sign-in**
-![Sign-in page](docs/images/sign-in.png)
-GitHub OAuth only -- no guest login.
 
 </td>
 </tr>
