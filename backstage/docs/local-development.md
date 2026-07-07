@@ -15,7 +15,7 @@ regression in `app-config.production.yaml` itself.
 | Config | `app-config.yaml` + `app-config.production.yaml` | same two files, plus `app-config.local-container.yaml` layered on top |
 | Database | Cloud SQL via the `cloud-sql-proxy` sidecar | plain `postgres:16-alpine` container -- same `pg` client, same `pluginDivisionMode: schema` |
 | HTTPS | persistent self-signed cert from the `backstage-tls` secret | persistent self-signed cert from `./certs/`, generated once by `scripts/gen-local-tls.sh` |
-| `app`/`backend` baseUrl | `https://34.55.255.110` | `https://localhost:7007` (the only thing `app-config.local-container.yaml` overrides) |
+| `app`/`backend` baseUrl | `https://<LB_IP>` | `https://localhost:7007` (the only thing `app-config.local-container.yaml` overrides) |
 | Secrets (`GITHUB_TOKEN`, `AUTH_GITHUB_CLIENT_*`, `POSTGRES_PASSWORD`) | `backstage-secrets` k8s Secret | `.env` (copy `.env.example`) |
 
 Everything else -- `kubernetes.clusterLocatorMethods`, `argocd.appLocatorMethods`, TechDocs'

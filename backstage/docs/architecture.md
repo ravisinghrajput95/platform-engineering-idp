@@ -6,7 +6,7 @@ services it catalogs.
 ## Where it runs
 
 Backstage runs as a single-replica `Deployment` in the `backstage` namespace on the
-`cloudcart-dev` GKE cluster (project `project-0c628a24-2e5e-4878-861`, `us-central1`). The
+`cloudcart-dev` GKE cluster (project `<GCP_PROJECT_ID>`, `us-central1`). The
 manifests live in [`backstage/deploy/`](https://github.com/ravisinghrajput95/platform-engineering-idp/tree/main/backstage/deploy)
 and are applied by ArgoCD -- see [CI/CD Pipeline](cicd.md) for how a change gets there.
 
@@ -21,7 +21,7 @@ Each pod has two containers:
 ## Identity and database access
 
 The pod's Kubernetes ServiceAccount (`backstage`) is bound via Workload Identity to the GCP
-service account `backstage-sql-client@project-0c628a24-2e5e-4878-861.iam.gserviceaccount.com`.
+service account `backstage-sql-client@<GCP_PROJECT_ID>.iam.gserviceaccount.com`.
 Neither container carries a JSON key -- both the Cloud SQL proxy and any other GCP API calls
 the backend makes use this identity's ambient credentials.
 
@@ -32,7 +32,7 @@ the Postgres user.
 
 ## Networking and TLS
 
-The `backstage` Service is a `LoadBalancer` bound to a reserved static IP (`34.55.255.110`) on
+The `backstage` Service is a `LoadBalancer` bound to a reserved static IP (`<LB_IP>`) on
 port 443. There's no domain or CA-issued certificate yet, so:
 
 - The pod is configured with `backend.https.certificate`, pointing at a **persistent**

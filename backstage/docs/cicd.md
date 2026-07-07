@@ -24,7 +24,7 @@ never talks to the Kubernetes cluster directly:
    Registry repository -- not project-wide, and not the same service account any other
    repo's CI uses.
 3. Build and push the image to
-   `us-central1-docker.pkg.dev/project-0c628a24-2e5e-4878-861/backstage/backstage`, tagged
+   `us-central1-docker.pkg.dev/<GCP_PROJECT_ID>/backstage/backstage`, tagged
    both `:latest` and `:<commit-sha>`.
 4. Rewrite the image tag in
    [`deploy/deployment.yaml`](https://github.com/ravisinghrajput95/platform-engineering-idp/blob/main/backstage/deploy/deployment.yaml)
