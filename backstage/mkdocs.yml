@@ -3,6 +3,7 @@ nav:
   - Home: index.md
   - Architecture: architecture.md
   - CI/CD Pipeline: cicd.md
+  - Local Development: local-development.md
   - Software Catalog: catalog.md
   - TechDocs: techdocs.md
 plugins:
